@@ -13,41 +13,35 @@ namespace TodoApplication.Controllers
     [ApiController]
     public class TodoEventController : ControllerBase
     {
-        int i = 5;
+
+        TodoDataAccessLayer objTodo = new TodoDataAccessLayer();
 
         // GET: api/<TodoEventController>/get
         [HttpGet]
-        public IEnumerable<TodoEvent> Get()
+        public IEnumerable<Todo> Get()
         {
-            return Enumerable.Range(1, i).Select(index => new TodoEvent
-            {
-                Id = index,
-                Date = DateTime.Now.AddDays(index).ToString(),
-                Title = "test title",
-                Detail = "test detailaddddddddddddddddddddddddddddddddddddddd"
-            })
-            .ToArray();
+            return objTodo.GetAllTodos();
         }
 
         //POST api/<TodoEventController>
         [HttpPost]
-        public void Post([FromBody] TodoEvent todoEvent)
+        public int Post([FromBody] Todo todo)
         {
-            i += 1;
+            return objTodo.AddTodo(todo);
         }
 
         //PUT api/<TodoEventController>
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] TodoEvent todoEvent)
+        public int Put(int id, [FromBody] Todo todo)
         {
-            i -= 1;
+            return objTodo.UpdateTodo(todo);
         }
 
         //DELETE api/<TodoEventController>/<id>
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public int Delete(int id)
         {
-            i -= 1;
+            return objTodo.DeleteTodo(id);
         }
     }
 }

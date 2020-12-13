@@ -1,5 +1,6 @@
 ﻿import React, { useState, useEffect } from 'react';
 import './ToDoApp.css';
+import { format } from "date-fns";
 
 const ToDoApp = () => {
 
@@ -13,7 +14,7 @@ const ToDoApp = () => {
         getTodoEvents();
     }, []);
 
-    /** Funtction for getting all todo events */
+    /* Funtction for getting all todo events */
     async function getTodoEvents() {
         const response = await fetch('api/todoevent');
         if (response.ok) {
@@ -26,13 +27,13 @@ const ToDoApp = () => {
         }
     }
 
-    /** Funtction for deleting a todo event */
+    /* Funtction for deleting a todo event */
     async function deleteTodoEvent(eventId) {
         const response = await fetch('api/todoevent/' + eventId, {
             method: 'DELETE',
             });
         if (response.ok) {
-            //const data = await response.json();
+            // Get TodoList
             getTodoEvents();
         }
         else {
@@ -41,7 +42,7 @@ const ToDoApp = () => {
         }
     }
 
-    /** Funtction for updating a todo event */
+    /* Funtction for updating a todo event */
     async function updateTodoEvents() {
         const response = await fetch('api/todoevent/' + evId, {
             method: 'PUT',
@@ -49,7 +50,7 @@ const ToDoApp = () => {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ Id: evId, Title: titleInput, Detail: detailsInput })
+            body: JSON.stringify({ Id: evId, Title: titleInput, Detail: detailsInput, time: new Date()})
         });
         if (response.ok) {
             getTodoEvents();
@@ -68,7 +69,7 @@ const ToDoApp = () => {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ Id: evId, Title: titleInput, Detail: detailsInput })
+            body: JSON.stringify({ Title: titleInput, Detail: detailsInput, time: new Date()  })
         });
         if (response.ok) {
             getTodoEvents();
@@ -113,6 +114,10 @@ const ToDoApp = () => {
         setDetailsInput(event.target.value);
     };
 
+    function fromTStoDateString(ts, dateformat) {
+        return ts ? format(new Date(ts), dateformat) : null;
+    }
+
     return (
         <div>
             <div>
@@ -120,11 +125,11 @@ const ToDoApp = () => {
             </div>
             <div>
                 <h2>Title</h2>
-                <input className="titleInput" value={titleInput} onChange={handleTitleInput} />
+                <input className="titleInput" value={titleInput} onChange={handleTitleInput} maxLength= '100' />
             </div>
             <div>
                 <h2>Details</h2>
-                <textarea className="detailsInput" value={detailsInput} onChange={handleDetailsInput} />
+                <textarea className="detailsInput" value={detailsInput} onChange={handleDetailsInput} maxLength="500" />
             </div>
             <div>
                 <button onClick={() => handleOperation()}>{ operation }</button>
@@ -143,7 +148,7 @@ const ToDoApp = () => {
                     <tbody>
                         {todoEvents?.map((e, index) =>
                             <tr key={e.id}>
-                                <td>{e.date}</td>
+                                <td>{fromTStoDateString(e.time, "dd/MM/yyy HH:mm")}</td>
                                 <td>{e.title}</td>
                                 <td>{e.detail}</td>
                                 <td>
