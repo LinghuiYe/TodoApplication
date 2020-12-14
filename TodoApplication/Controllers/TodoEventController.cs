@@ -16,7 +16,7 @@ namespace TodoApplication.Controllers
 
         TodoDataAccessLayer objTodo = new TodoDataAccessLayer();
 
-        // GET: api/<TodoEventController>/get
+        // GET: api/<TodoEventController>
         [HttpGet]
         public IEnumerable<Todo> Get()
         {
@@ -32,7 +32,7 @@ namespace TodoApplication.Controllers
 
         //PUT api/<TodoEventController>
         [HttpPut("{id}")]
-        public int Put(int id, [FromBody] Todo todo)
+        public int Put([FromBody] Todo todo)
         {
             return objTodo.UpdateTodo(todo);
         }
