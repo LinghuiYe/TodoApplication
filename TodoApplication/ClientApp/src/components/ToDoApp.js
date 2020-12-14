@@ -4,65 +4,62 @@ import { format } from "date-fns";
 
 const ToDoApp = () => {
 
-    const [todoEvents, setTodoEvents] = useState([]);
+    const [todoList, setTodoList] = useState([]);
     const [titleInput, setTitleInput] = useState('');
     const [detailsInput, setDetailsInput] = useState('');
     const [operation, setOperation] = useState('Add');
-    const [evId, setEvId] = useState(0);
+    const [todoId, setTodoId] = useState(0);
+    const [apiStatus, setApiStatus] = useState(false);
 
     useEffect(() => {
-        getTodoEvents();
+        getTodoEvent();
     }, []);
 
     /* Funtction for getting all todo events */
-    async function getTodoEvents() {
+    async function getTodoEvent() {
         const response = await fetch('api/todoevent');
         if (response.ok) {
             const data = await response.json();
-            setTodoEvents(data);
+            setTodoList(data);
+            setApiStatus(true);
         }
         else {
             alert("HTTP-Error:" + response.status)
-            setTodoEvents([]);
+            setTodoList([]);
         }
     }
 
     /* Funtction for deleting a todo event */
-    async function deleteTodoEvent(eventId) {
-        const response = await fetch('api/todoevent/' + eventId, {
+    async function deleteTodoEvent(todoId) {
+        const response = await fetch('api/todoevent/' + todoId, {
             method: 'DELETE',
-            });
-        if (response.ok) {
-            // Get TodoList
-            getTodoEvents();
-        }
-        else {
+        });
+
+        getTodoEvent();
+        if (!response.ok) {
             alert("HTTP-Error:" + response.status)
-            setTodoEvents([]);
         }
     }
 
     /* Funtction for updating a todo event */
-    async function updateTodoEvents() {
-        const response = await fetch('api/todoevent/' + evId, {
+    async function updateTodoEvent() {
+        const response = await fetch('api/todoevent/' + todoId, {
             method: 'PUT',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ Id: evId, Title: titleInput, Detail: detailsInput, time: new Date()})
+            body: JSON.stringify({ Id: todoId, Title: titleInput, Detail: detailsInput, time: new Date()})
         });
-        if (response.ok) {
-            getTodoEvents();
-        }
-        else {
+
+        getTodoEvent();
+        if (!response.ok) {
             alert("HTTP-Error:" + response.status)
-            setTodoEvents([]);
         }
     }
 
     /** Funtction for adding a todo event */
-    async function addTodoEvents() {
+    async function addTodoEvent() {
         const response = await fetch('api/todoevent', {
             method: 'POST',
             headers: {
@@ -71,30 +68,28 @@ const ToDoApp = () => {
             },
             body: JSON.stringify({ Title: titleInput, Detail: detailsInput, time: new Date()  })
         });
-        if (response.ok) {
-            getTodoEvents();
-        }
-        else {
+
+        getTodoEvent();
+        if (!response.ok) {
             alert("HTTP-Error:" + response.status)
-            setTodoEvents([]);
         }
     }
 
-    const handleUpdate = eventId => {
-        console.log(eventId);
-        const eventToUpdated = todoEvents.find(e => e.id === eventId);
+    const handleUpdate = todoId => {
+        console.log(todoId);
+        const eventToUpdated = todoList.find(e => e.id === todoId);
         setTitleInput(eventToUpdated?.title);
         setDetailsInput(eventToUpdated?.detail)
         setOperation('Update');
-        setEvId(eventId);
+        setTodoId(todoId);
     };
 
     const handleOperation = () => {
         if (titleInput && titleInput.length > 0 && detailsInput && detailsInput.length > 0) {
             if (operation === 'Add') {
-                addTodoEvents()
+                addTodoEvent()
             } else {
-                updateTodoEvents();
+                updateTodoEvent();
                 setOperation('Add');
             }
             setTitleInput('');
@@ -119,6 +114,7 @@ const ToDoApp = () => {
     }
 
     return (
+        apiStatus &&
         <div>
             <div>
                 <h1>TODO event</h1>
@@ -132,7 +128,7 @@ const ToDoApp = () => {
                 <textarea className="detailsInput" value={detailsInput} onChange={handleDetailsInput} maxLength="500" />
             </div>
             <div>
-                <button onClick={() => handleOperation()}>{ operation }</button>
+                <button onClick={handleOperation}>{operation}</button>
             </div>
             <div className="todoList">
                 <h2>TODO List</h2>
@@ -146,7 +142,7 @@ const ToDoApp = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {todoEvents?.map((e, index) =>
+                        {todoList?.map((e, index) =>
                             <tr key={e.id}>
                                 <td>{fromTStoDateString(e.time, "dd/MM/yyy HH:mm")}</td>
                                 <td>{e.title}</td>
