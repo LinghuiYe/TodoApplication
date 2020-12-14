@@ -10,6 +10,7 @@ const ToDoApp = () => {
     const [operation, setOperation] = useState('Add');
     const [todoId, setTodoId] = useState(0);
     const [apiStatus, setApiStatus] = useState(false);
+    const [btnStatus, setBtnStatus] = useState(true);
 
     useEffect(() => {
         getTodoEvent();
@@ -94,6 +95,7 @@ const ToDoApp = () => {
             }
             setTitleInput('');
             setDetailsInput('');
+            setBtnStatus(true);
         }
     };
 
@@ -103,10 +105,20 @@ const ToDoApp = () => {
 
     const handleTitleInput = event => {
         setTitleInput(event.target.value);
+        if (event.target.value != '' && detailsInput != '') {
+            setBtnStatus(false);
+        } else {
+            setBtnStatus(true);
+        }
     };
 
     const handleDetailsInput = event => {
         setDetailsInput(event.target.value);
+        if (titleInput != '' && event.target.value != '') {
+            setBtnStatus(false);
+        } else {
+            setBtnStatus(true);
+        }
     };
 
     function fromTStoDateString(ts, dateformat) {
@@ -128,7 +140,7 @@ const ToDoApp = () => {
                 <textarea className="detailsInput" value={detailsInput} onChange={handleDetailsInput} maxLength="500" />
             </div>
             <div>
-                <button onClick={handleOperation}>{operation}</button>
+                <button onClick={handleOperation} disabled={btnStatus}>{operation}</button>
             </div>
             <div className="todoList">
                 <h2>TODO List</h2>
