@@ -4,13 +4,13 @@ import { format } from "date-fns";
 
 const ToDoApp = () => {
 
+    const [apiStatus, setApiStatus] = useState(false);
     const [todoList, setTodoList] = useState([]);
     const [titleInput, setTitleInput] = useState('');
     const [detailsInput, setDetailsInput] = useState('');
     const [operation, setOperation] = useState('Add');
-    const [todoId, setTodoId] = useState(0);
-    const [apiStatus, setApiStatus] = useState(false);
     const [btnStatus, setBtnStatus] = useState(true);
+    const [todoId, setTodoId] = useState(0);
 
     useEffect(() => {
         getTodoEvent();
@@ -121,7 +121,7 @@ const ToDoApp = () => {
         }
     };
 
-    function fromTStoDateString(ts, dateformat) {
+    function fromDTtoDateString(ts, dateformat) {
         return ts ? format(new Date(ts), dateformat) : null;
     }
 
@@ -156,7 +156,7 @@ const ToDoApp = () => {
                     <tbody>
                         {todoList?.map((e, index) =>
                             <tr key={e.id}>
-                                <td>{fromTStoDateString(e.time, "dd/MM/yyy HH:mm")}</td>
+                                <td>{fromDTtoDateString(e.time, "dd/MM/yyy HH:mm")}</td>
                                 <td>{e.title}</td>
                                 <td>{e.detail}</td>
                                 <td>
